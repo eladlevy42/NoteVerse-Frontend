@@ -1,11 +1,6 @@
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "../components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "../components/ui/card";
+
 import { Link } from "react-router-dom";
 
 function Homepage() {

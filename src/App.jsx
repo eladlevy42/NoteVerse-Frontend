@@ -9,7 +9,6 @@ import MainLayout from "./pages/MainLayout";
 
 function ProtectedRoute({ children }) {
   const { loggedInUser } = useAuth();
-  console.log(loggedInUser);
 
   if (loggedInUser === null) {
     console.log(null);
@@ -30,6 +29,7 @@ function UserLoggedInRoute({ children }) {
 function App() {
   return (
     <Routes>
+      {" "}
       <Route
         path="/"
         element={
@@ -40,7 +40,7 @@ function App() {
       >
         <Route index element={<Homepage />} />
         <Route path="/myTasks" element={<MyTasks />} />
-      </Route>
+      </Route>{" "}
       <Route path="/auth" element={<UserLoggedInRoute></UserLoggedInRoute>}>
         <Route index path="login" element={<Login />} />
         <Route path="register" element={<Register />} />

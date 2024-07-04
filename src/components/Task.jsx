@@ -7,19 +7,33 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Link } from "react-router-dom";
-import { Button } from "./ui/button";
-import { Input } from "postcss";
 
-function Task({ props }) {
-  const { task } = props;
+function Task({ task }) {
+  const formatTodos = task.todoList.map((todoObj, index) => {
+    function handleChecked() {}
+    return (
+      <div key={index}>
+        <input
+          type="checkbox"
+          onChange={handleChecked}
+          checked={todoObj.isComplete}
+        />
+        <label>
+          {index + 1}. {todoObj.title}
+        </label>
+      </div>
+    );
+  });
   return (
     <Card className=" w-52 self-center m-auto">
       <CardHeader>
         <CardTitle>{task.title}</CardTitle>
         <CardDescription>{task.description}</CardDescription>
       </CardHeader>
-      <CardContent>{task.body}</CardContent>
+      <CardContent>
+        {task.body}
+        {formatTodos}
+      </CardContent>
       <CardFooter></CardFooter>
     </Card>
   );
