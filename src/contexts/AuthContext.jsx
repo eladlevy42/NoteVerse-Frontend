@@ -12,12 +12,12 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!token) {
+    if (!token || token == null) {
       setLoggedInUser(null);
       navigate("/auth/login", { replace: true });
       return;
     }
-
+    console.log(token);
     async function fetchUser() {
       try {
         const response = await api.get("/user");
@@ -42,14 +42,17 @@ export const AuthProvider = ({ children }) => {
   function logout() {
     setToken(null);
     setLoggedInUser(null);
+    localStorage.setItem("jwt-taskify", null);
+    navigate("/", { replace: true });
   }
 
   async function login(userData) {
     console.log(userData);
     try {
-      const response = await api.post("/auth/auth/login", userData);
+      const response = await api.post("/auth/login", userData);
       setToken(response.data.token);
     } catch (error) {
+      console.log(error);
       console.error("Error logging in:", error);
     }
   }
@@ -57,7 +60,7 @@ export const AuthProvider = ({ children }) => {
   async function register(userData) {
     console.log(userData);
     try {
-      const response = await api.post("/auth/auth/register", userData);
+      const response = await api.post("/auth/register", userData);
       const { username, password } = userData;
       await login({ username, password });
     } catch (error) {

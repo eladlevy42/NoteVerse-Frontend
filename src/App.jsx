@@ -23,7 +23,6 @@ function UserLoggedInRoute({ children }) {
   if (loggedInUser !== null) {
     return <Navigate to="/" />;
   }
-
   return children;
 }
 function App() {
@@ -41,9 +40,24 @@ function App() {
         <Route index element={<Homepage />} />
         <Route path="/myTasks" element={<MyTasks />} />
       </Route>{" "}
-      <Route path="/auth" element={<UserLoggedInRoute></UserLoggedInRoute>}>
-        <Route index path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+      <Route path="/auth">
+        <Route
+          index
+          path="login"
+          element={
+            <UserLoggedInRoute>
+              <Login />
+            </UserLoggedInRoute>
+          }
+        />
+        <Route
+          path="register"
+          element={
+            <UserLoggedInRoute>
+              <Register />
+            </UserLoggedInRoute>
+          }
+        />
       </Route>
     </Routes>
   );

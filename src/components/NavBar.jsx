@@ -3,11 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "../lib/classNames"; // Utility function to conditionally apply classes
 import { useAuth } from "@/contexts/AuthContext";
-import { useLocalStorage } from "@uidotdev/usehooks";
 
 function NavBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
   const location = useLocation();
   const [loginBtn, setLoginBtn] = useState(null);
   useEffect(() => {
@@ -25,12 +24,17 @@ function NavBar() {
       );
     } else {
       setLoginBtn(
-        <Link
-          to="/myTasks"
-          className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
-        >
-          My Tasks
-        </Link>
+        <>
+          <Link
+            to="/myTasks"
+            className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+          >
+            My Tasks
+          </Link>
+          <Button variant="outline" onClick={logout}>
+            Log Out
+          </Button>
+        </>
       );
     }
   }, [location.pathname]);
