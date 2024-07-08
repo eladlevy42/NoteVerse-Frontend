@@ -29,7 +29,7 @@ function NavBar() {
             to="/myTasks"
             className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
           >
-            My Tasks
+            My Notes
           </Link>
           <Button variant="outline" onClick={logout}>
             Log Out

@@ -1,9 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const Modal = ({ children, onClose, title }) => {
+const Modal = ({ children, onclose }) => {
   const nav = useNavigate();
   function goBack() {
+    if (onclose) {
+      onclose();
+    }
     nav(-1);
   }
   return (

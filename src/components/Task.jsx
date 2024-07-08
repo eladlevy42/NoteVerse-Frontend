@@ -7,12 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import api from "@/lib/api";
-import { Button } from "./ui/button";
+
 import AreUSureDialog from "./ui/AreUSureDialog";
-import { Input } from "./ui/input";
-import Spinner from "./ui/Spinner";
+
+import { Pin, PinOff, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function Task({ task, getTasks }) {
   const [todos, setTodos] = useState(task.todoList);
@@ -20,56 +21,26 @@ function Task({ task, getTasks }) {
   const [description, setDescription] = useState(task.description);
   const [body, setBody] = useState(task.body);
   const [pinned, setPinned] = useState(task.isPinned);
-  const [isEditing, setIsEditing] = useState(false);
-
-  function toggleEditMode() {
-    setIsEditing(!isEditing);
+  const nav = useNavigate();
+  function checkDone() {
+    for (let i of task.todoList) {
+      if (!i.isComplete) return false;
+    }
+    return true;
   }
-
-  function handleTitleChange(event) {
-    setTitle(event.target.value);
-  }
-
-  function handleDescriptionChange(event) {
-    setDescription(event.target.value);
-  }
-
-  function handleBodyChange(event) {
-    setBody(event.target.value);
-  }
-
-  function handleTodoChange(index, event) {
-    const newTodos = [...todos];
-    newTodos[index].title = event.target.value;
-    setTodos(newTodos);
-  }
-
-  function handleCheckedChange(index) {
-    const newTodos = [...todos];
-    newTodos[index].isComplete = !newTodos[index].isComplete;
-    setTodos(newTodos);
-  }
-
-  async function saveChanges() {
+  async function handlePinChange(ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
     try {
       const newTask = await api.put("/task", {
         id: task._id,
-        title,
-        description,
-        body,
-        todoList: todos,
-        isPinned: pinned,
+        title: task.title,
+        description: task.description,
+        body: task.body,
+        todoList: task.todoList,
+        isPinned: !pinned,
       });
-      setIsEditing(false);
-      getTasks();
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  async function deleteTask() {
-    try {
-      await api.delete(`/task/${task._id}`);
+      setPinned(!pinned);
       getTasks();
     } catch (err) {
       console.log(err);
@@ -78,69 +49,38 @@ function Task({ task, getTasks }) {
 
   return (
     <Card
-      className={`w-full h-full p-4 ${pinned ? "border-2 border-yellow-400" : ""}`}
+      className={`w-full h-full p-4 ${pinned ? "border-2 border-yellow-400" : ""}  `}
+      onClick={() => {
+        nav(`/myTasks/${task._id}`);
+      }}
     >
       <CardHeader>
-        {pinned && <span>📌</span>}
         <div className="flex justify-between items-center">
           <div>
-            {isEditing ? (
-              <Input value={title} onChange={handleTitleChange} />
-            ) : (
-              <CardTitle>{title}</CardTitle>
-            )}
-            {isEditing ? (
-              <Input value={description} onChange={handleDescriptionChange} />
-            ) : (
-              <CardDescription>{description}</CardDescription>
-            )}
+            <label
+              htmlFor="pin-checkbox"
+              className="text-sm"
+              onClick={handlePinChange}
+            >
+              {pinned ? <PinOff /> : <Pin />}
+            </label>
+
+            <CardTitle className={`${checkDone() ? ` line-through` : ``}`}>
+              {title}
+            </CardTitle>
+
+            <CardDescription
+              className={`${checkDone() ? ` line-through` : ``}`}
+            >
+              {description}
+            </CardDescription>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        {isEditing ? (
-          <Input value={body} onChange={handleBodyChange} />
-        ) : (
-          <p>{body}</p>
-        )}
-        <div className="mt-4 space-y-2">
-          {todos.map((todo, index) => (
-            <div key={index} className="flex items-center space-x-2">
-              <Checkbox
-                defaultChecked={todo.isComplete}
-                onCheckedChange={() => handleCheckedChange(index)}
-              />
-              {isEditing ? (
-                <Input
-                  value={todo.title}
-                  onChange={(event) => handleTodoChange(index, event)}
-                />
-              ) : (
-                <label className="text-sm">
-                  {index + 1}. {todo.title}
-                </label>
-              )}
-            </div>
-          ))}
-        </div>
+        <p className={`${checkDone() ? ` line-through` : ``}`}> {body}</p>
       </CardContent>
-      <CardFooter className="justify-between">
-        <AreUSureDialog BtnText={"Delete"} func={deleteTask} />
-        {isEditing ? (
-          <>
-            <Button variant="outline" onClick={saveChanges}>
-              Save
-            </Button>
-            <Button variant="outline" onClick={toggleEditMode}>
-              Cancel
-            </Button>
-          </>
-        ) : (
-          <Button variant="outline" onClick={toggleEditMode}>
-            Edit
-          </Button>
-        )}
-      </CardFooter>
+      <CardFooter className="flex justify-between items-center space-x-4"></CardFooter>
     </Card>
   );
 }

@@ -13,6 +13,7 @@ module.exports = {
       center: true,
       padding: "2rem",
       screens: {
+        xs: "350px",
         sm: "480px", // Customize the 'sm' breakpoint
         md: "768px", // Customize the 'md' breakpoint
         lg: "1024px", // Customize the 'lg' breakpoint

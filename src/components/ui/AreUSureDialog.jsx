@@ -16,7 +16,9 @@ function AreUSureDialog({ BtnText, func }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline">{BtnText}</Button>
+        <Button variant="outline" className=" border-none p-0 m-2">
+          {BtnText}
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

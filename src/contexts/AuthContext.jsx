@@ -14,10 +14,10 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (!token || token == null) {
       setLoggedInUser(null);
-      navigate("/auth/login", { replace: true });
+      // navigate("/auth/login", { replace: true });
       return;
     }
-    console.log(token);
+
     async function fetchUser() {
       try {
         const response = await api.get("/user");
@@ -47,7 +47,6 @@ export const AuthProvider = ({ children }) => {
   }
 
   async function login(userData) {
-    console.log(userData);
     try {
       const response = await api.post("/auth/login", userData);
       setToken(response.data.token);
@@ -58,7 +57,6 @@ export const AuthProvider = ({ children }) => {
   }
 
   async function register(userData) {
-    console.log(userData);
     try {
       const response = await api.post("/auth/register", userData);
       const { username, password } = userData;

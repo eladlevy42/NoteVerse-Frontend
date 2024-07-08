@@ -1,95 +1,104 @@
-// import React, { useState } from "react";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import { Button, Input } from "@/components/ui/button"; // Adjust imports based on your actual component paths
+import Modal from "@/components/ui/Modal";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import api from "@/lib/api";
+import { Eraser, Plus, Save } from "lucide-react";
 
-// function CreateTask() {
-//   const [todos, setTodos] = useState([]);
-//   const [todosElement, setTodosElement] = useState([
-//     <Input key={1} placeholder="1. Todo Title" name="todoTitle1" required />,
-//   ]);
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-//   const addTodo = (ev) => {
-//     ev.preventDefault();
-//     const newCount = todosElement.length + 1;
-//     const todoTitle = ev.target.elements["todoTitle"].value;
+function CreateTask() {
+  const [todos, setTodos] = useState([
+    { title: "Enter Todo", description: "Todo Description", id: Math.random() },
+  ]);
+  const nav = useNavigate();
+  function handleTitleChange(id, event) {
+    event.preventDefault();
+    const newTodos = [...todos];
+    newTodos.find((todo) => {
+      if (todo.id == id) {
+        todo.title = event.target.value;
+      }
+    });
+    setTodos(newTodos);
+  }
+  function handleDescChange(id, event) {
+    event.preventDefault();
+    const newTodos = [...todos];
+    newTodos.find((todo) => {
+      if (todo.id == id) {
+        todo.description = event.target.value;
+      }
+    });
+    setTodos(newTodos);
+  }
+  function addTodo() {
+    const emptyTodo = {
+      title: "Enter Title",
+      description: "Enter Description",
+      id: Math.random(),
+    };
+    setTodos([...todos, emptyTodo]);
+  }
+  function deleteTodo(id) {
+    const todosCopy = todos.filter((todo) => {
+      return todo.id != id;
+    });
+    setTodos(todosCopy);
+  }
+  function addTask(ev) {
+    ev.preventDefault();
+    const form = new FormData(ev.target);
+    const title = form.get("title");
+    const description = form.get("description");
+    const body = form.get("body");
+    const newTask = { title, description, body, todoList: todos };
+    try {
+      api.post("/task/", newTask);
+      nav("/myTasks");
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  const formModal = (
+    <>
+      <h1 className="text-xl font-bold mb-4">New Note</h1>
+      <form className=" gap-1 flex flex-col" onSubmit={addTask}>
+        <Input name="title" defaultValue={"Title"} required />
+        <Input name="description" defaultValue={"Description"} required />
+        <Input name="body" defaultValue={"Body"} required />
+        <h3>Todos:</h3>
+        {todos.map((todo) => {
+          return (
+            <div key={todo.id} className="flex items-center space-x-2">
+              <Input
+                defaultValue={todo.title}
+                onChange={(ev) => handleTitleChange(todo.id, ev)}
+                required
+              />
+              <Input
+                defaultValue={todo.description}
+                onChange={(ev) => {
+                  handleDescChange(todo.id, ev);
+                }}
+                required
+              />
 
-//     if (!todoTitle.trim()) return;
+              <Eraser
+                onClick={() => {
+                  deleteTodo(todo.id);
+                }}
+              />
+            </div>
+          );
+        })}
+        <Plus onClick={addTodo} />
+        <Button type="submit">Add Note</Button>
+      </form>
+    </>
+  );
+  return <Modal children={formModal} />;
+}
 
-//     setTodosElement([
-//       ...todosElement,
-//       <Input
-//         key={newCount}
-//         placeholder={`${newCount}. Todo Title`}
-//         name={`todoTitle${newCount}`}
-//         defaultValue={todoTitle}
-//         required
-//       />,
-//     ]);
-//     setTodos([...todos, { title: todoTitle, isComplete: false }]);
-//     ev.target.elements["todoTitle"].value = "";
-//   };
-
-//   const deleteTodo = () => {
-//     setTodosElement(todosElement.slice(0, -1));
-//     setTodos(todos.slice(0, -1));
-//   };
-
-//   const addTask = (event) => {
-//     event.preventDefault();
-//     const formData = new FormData(event.target);
-//     const newTask = {
-//       title: formData.get("title"),
-//       description: formData.getAll("description")[0],
-//       body: formData.getAll("description")[1],
-//       todoList: todos,
-//     };
-//     console.log(newTask);
-//     // Reset form and todos
-//     event.target.reset();
-//     setTodos([]);
-//     setTodosElement([
-//       <Input key={1} placeholder="1. Todo Title" name="todoTitle1" required />,
-//     ]);
-//   };
-
-//   return (
-//     <div>
-//       <Card className="w-52 self-center m-auto">
-//         <CardHeader>
-//           <CardTitle>Create New Task</CardTitle>
-//         </CardHeader>
-//         <CardContent>
-//           <form onSubmit={addTask} className="flex-col flex gap-1">
-//             <Input placeholder="Task Title" name="title" required />
-//             <Input
-//               placeholder="Short Description"
-//               name="description"
-//               required
-//             />
-//             <Input placeholder="Description" name="body" required />
-//             {todosElement}
-//             <div className="flex gap-2">
-//               <Input placeholder="Todo Title" name="todoTitle" />
-//               <Button type="button" onClick={addTodo}>
-//                 +
-//               </Button>
-//               <Button type="button" onClick={deleteTodo}>
-//                 -
-//               </Button>
-//             </div>
-//             <Button type="submit">Add Task</Button>
-//           </form>
-//         </CardContent>
-//       </Card>
-//     </div>
-//   );
-// }
-
-// export default CreateTask;
+export default CreateTask;
