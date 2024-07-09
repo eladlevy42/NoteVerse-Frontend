@@ -1,17 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
-import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
 
 function Homepage() {
   const { loggedInUser } = useAuth();
-  const { toast } = useToast();
 
   return (
-    <div className="min-h-screen bg-[hsl(var(--background))] flex items-center justify-center p-6 ">
-      <Card className="max-w-4xl w-full mx-auto bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] rounded-xl shadow-lg overflow-hidden transition-transform transform hover:scale-105 duration-300 ease-in-out">
+    <div className="min-h-screen bg-[hsl(var(--background))] flex items-center justify-center p-6">
+      <Card className="max-w-4xl w-full mx-auto bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] rounded-xl shadow-lg overflow-hidden">
         <CardHeader className="text-center py-6 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]">
           <h1 className="text-5xl font-bold">Welcome to NoteVerse</h1>
           <p className="text-xl mt-2">Your Ultimate Note-Taking App</p>
@@ -32,7 +29,7 @@ function Homepage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-[hsl(var(--muted))] p-6 rounded-lg shadow-sm ">
+            <div className="bg-[hsl(var(--muted))] p-6 rounded-lg shadow-sm">
               <h2 className="text-2xl font-semibold mb-4 text-[hsl(var(--muted-foreground))]">
                 Features
               </h2>
@@ -41,9 +38,10 @@ function Homepage() {
                 <li>Create and track your to-do lists</li>
                 <li>Access your notes from any device</li>
                 <li>Secure and personalized user experience</li>
+                <li>Google Sign-In and Registration</li>
               </ul>
             </div>
-            <div className="bg-[hsl(var(--accent))] p-6 rounded-lg shadow-sm transition-transform transform hover:scale-105 duration-300 ease-in-out">
+            <div className="bg-[hsl(var(--accent))] p-6 rounded-lg shadow-sm">
               <h2 className="text-2xl font-semibold mb-4 text-[hsl(var(--accent-foreground))]">
                 Why Choose NoteVerse?
               </h2>

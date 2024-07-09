@@ -20,7 +20,7 @@ function NavBar() {
       setLoginBtn(
         <>
           <Link
-            className="text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))] block px-3 py-2 rounded-md text-base font-medium"
+            className="text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))] block px-3 py-2 rounded-md text-base font-medium min-w-fit"
             to="/auth/login"
           >
             Log In
@@ -60,10 +60,10 @@ function NavBar() {
 
   return (
     <nav className="bg-[hsl(var(--card))] shadow-md border-b border-[hsl(var(--border))]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 my-auto">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16 w-full">
+          <div className="flex justify-between w-full">
+            <div className="flex-shrink-0 my-auto  ">
               <Link
                 to="/"
                 className="text-2xl font-bold text-[hsl(var(--foreground))]"
