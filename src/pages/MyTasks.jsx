@@ -39,7 +39,7 @@ function MyTasks() {
 
   return (
     <>
-      <main className="p-4 bg-[hsl(var(--background))] text-[hsl(var(--foreground))] h-full">
+      <main className="p-4 bg-[hsl(var(--background))] text-[hsl(var(--foreground))] min-h-screen w-full">
         <div className="flex items-center">
           <h1 className="font-bold mx-2">New Note: </h1>
           <PlusCircle

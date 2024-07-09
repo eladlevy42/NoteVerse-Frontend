@@ -10,7 +10,7 @@ function Homepage() {
   const { toast } = useToast();
 
   return (
-    <div className="min-h-screen bg-[hsl(var(--background))] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[hsl(var(--background))] flex items-center justify-center p-6 ">
       <Card className="max-w-4xl w-full mx-auto bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] rounded-xl shadow-lg overflow-hidden transition-transform transform hover:scale-105 duration-300 ease-in-out">
         <CardHeader className="text-center py-6 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]">
           <h1 className="text-5xl font-bold">Welcome to NoteVerse</h1>
