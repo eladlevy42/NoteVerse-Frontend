@@ -9,25 +9,20 @@ import {
 } from "./ui/card";
 
 import api from "@/lib/api";
-
 import AreUSureDialog from "./ui/AreUSureDialog";
-
 import { Pin, PinOff, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "./ui/use-toast";
 
 function Task({ task, getTasks }) {
-  const [todos, setTodos] = useState(task.todoList);
-  const [title, setTitle] = useState(task.title);
-  const [description, setDescription] = useState(task.description);
-  const [body, setBody] = useState(task.body);
+  const { toast } = useToast();
   const [pinned, setPinned] = useState(task.isPinned);
   const nav = useNavigate();
+
   function checkDone() {
-    for (let i of task.todoList) {
-      if (!i.isComplete) return false;
-    }
-    return true;
+    return task.todoList.every((item) => item.isComplete);
   }
+
   async function handlePinChange(ev) {
     ev.preventDefault();
     ev.stopPropagation();
@@ -43,42 +38,49 @@ function Task({ task, getTasks }) {
       setPinned(!pinned);
       getTasks();
     } catch (err) {
-      console.log(err);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: err.response.data.error,
+      });
     }
   }
 
   return (
     <Card
-      className={`w-full h-full p-4 ${pinned ? "border-2 border-yellow-400" : ""}  `}
+      className={`cursor-pointer w-full h-full p-4 ${
+        pinned ? "border-2 border-yellow-400" : ""
+      } bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] transition-colors duration-300 hover:bg-[hsl(var(--card-hover))]`}
       onClick={() => {
         nav(`/myTasks/${task._id}`);
       }}
     >
       <CardHeader>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center ">
           <div>
             <label
               htmlFor="pin-checkbox"
-              className="text-sm"
-              onClick={handlePinChange}
+              className="cursor-pointer text-sm w-auto"
             >
-              {pinned ? <PinOff /> : <Pin />}
+              {pinned ? (
+                <PinOff onClick={handlePinChange} />
+              ) : (
+                <Pin onClick={handlePinChange} />
+              )}
             </label>
 
-            <CardTitle className={`${checkDone() ? ` line-through` : ``}`}>
-              {title}
+            <CardTitle className={checkDone() ? "line-through" : ""}>
+              {task.title}
             </CardTitle>
 
-            <CardDescription
-              className={`${checkDone() ? ` line-through` : ``}`}
-            >
-              {description}
+            <CardDescription className={checkDone() ? "line-through" : ""}>
+              {task.description}
             </CardDescription>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <p className={`${checkDone() ? ` line-through` : ``}`}> {body}</p>
+        <p className={checkDone() ? "line-through" : ""}>{task.body}</p>
       </CardContent>
       <CardFooter className="flex justify-between items-center space-x-4"></CardFooter>
     </Card>

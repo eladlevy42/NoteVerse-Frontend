@@ -1,3 +1,4 @@
+import { useToast } from "@/components/ui/use-toast";
 import api from "@/lib/api";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import React, { createContext, useState, useEffect, useContext } from "react";
@@ -8,13 +9,12 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [loggedInUser, setLoggedInUser] = useState(undefined);
   const [token, setToken] = useLocalStorage("jwt-taskify", null);
-
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!token || token == null) {
       setLoggedInUser(null);
-      // navigate("/auth/login", { replace: true });
       return;
     }
 
@@ -22,27 +22,41 @@ export const AuthProvider = ({ children }) => {
       try {
         const response = await api.get("/user");
         setLoggedInUser(response.data);
+
+        // Show welcome toast if user is logged in and hasn't seen it yet
+        const hasSeenWelcome = sessionStorage.getItem("hasSeenWelcome");
+        if (!hasSeenWelcome) {
+          toast({
+            variant: "success",
+            title: `Welcome Back ${response.data.firstName}!`,
+          });
+          sessionStorage.setItem("hasSeenWelcome", "true");
+        }
       } catch (error) {
-        if (error.response?.status === 401) {
-          console.error("Invalid token, logging out");
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: error.response.data.error,
+        });
+        if (error.response?.status === 401 || error.response?.status === 404) {
           logout();
-        } else if (error.response?.status === 404) {
-          console.error("User not found, logging out");
-          logout();
-        } else {
-          console.error("Error fetching user data:", error);
         }
         navigate("/auth/login", { replace: true });
       }
     }
 
     fetchUser();
-  }, [token]);
+  }, [token, navigate, toast]);
 
   function logout() {
     setToken(null);
     setLoggedInUser(null);
-    localStorage.setItem("jwt-taskify", null);
+    sessionStorage.removeItem("hasSeenWelcome"); // Reset welcome message flag on logout
+    toast({
+      variant: "info",
+      title: "Logged Out",
+      description: "You have been logged out successfully.",
+    });
     navigate("/", { replace: true });
   }
 
@@ -52,7 +66,11 @@ export const AuthProvider = ({ children }) => {
       setToken(response.data.token);
     } catch (error) {
       console.log(error);
-      console.error("Error logging in:", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.response.data.error,
+      });
     }
   }
 
@@ -61,8 +79,17 @@ export const AuthProvider = ({ children }) => {
       const response = await api.post("/auth/register", userData);
       const { username, password } = userData;
       await login({ username, password });
+      toast({
+        variant: "success",
+        title: "Registration Successful",
+        description: "Your account has been created successfully.",
+      });
     } catch (error) {
-      console.error("Error registering:", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.response.data.error,
+      });
     }
   }
 
@@ -75,10 +102,10 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within a UserProvider");
+    throw new Error("useAuth must be used within a AuthProvider");
   }
   return context;
-}
+};

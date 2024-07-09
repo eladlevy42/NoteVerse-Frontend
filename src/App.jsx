@@ -8,12 +8,11 @@ import MyTasks from "./pages/MyTasks";
 import MainLayout from "./pages/MainLayout";
 import CreateTask from "./pages/CreateTask";
 import NoteDetails from "./pages/NoteDetails";
+import Contact from "./pages/Contact";
 
 // ProtectedRoute to guard authenticated routes
 function ProtectedRoute({ children }) {
   const { loggedInUser } = useAuth();
-  console.log("loggedInUser", loggedInUser);
-
   if (loggedInUser === undefined) {
     return null;
   }
@@ -42,6 +41,7 @@ function App() {
     <Routes>
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Homepage />} />
+        <Route path="/contact" element={<Contact />} />
         <Route
           path="/myTasks"
           element={

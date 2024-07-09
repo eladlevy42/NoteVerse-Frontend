@@ -13,20 +13,19 @@ import { Button } from "../components/ui/button";
 import AreUSureDialog from "../components/ui/AreUSureDialog";
 import { Input } from "../components/ui/input";
 import {
+  CirclePlus,
   CircleX,
   Eraser,
-  Minus,
   Pencil,
-  Pin,
-  PinOff,
-  Plus,
   Save,
   Trash2,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import Modal from "@/components/ui/Modal";
+import { useToast } from "@/components/ui/use-toast";
 
 function NoteDetails() {
+  const { toast } = useToast();
   const params = useParams();
   const [task, setTask] = useState(null);
   const [todos, setTodos] = useState(null);
@@ -36,6 +35,7 @@ function NoteDetails() {
   const [pinned, setPinned] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const nav = useNavigate();
+
   async function getTask(id) {
     try {
       const { data } = await api.get(`/task/${id}`);
@@ -46,14 +46,18 @@ function NoteDetails() {
       setPinned(data.isPinned);
       setTitle(data.title);
     } catch (err) {
-      console.log(err);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: err.response.data.error,
+      });
     }
   }
 
   useEffect(() => {
     const { id } = params;
     getTask(id);
-  }, []);
+  }, [params]);
 
   function toggleEditMode() {
     setIsEditing(!isEditing);
@@ -81,7 +85,7 @@ function NoteDetails() {
     const newTodos = [...todos];
     newTodos[index].isComplete = !newTodos[index].isComplete;
     setTodos(newTodos);
-    saveChanges();
+    await saveChanges();
   }
 
   async function saveChanges() {
@@ -91,38 +95,72 @@ function NoteDetails() {
         title: task.title,
         description: task.description,
         body: task.body,
-        todoList: task.todoList,
+        todoList: todos,
         isPinned: pinned,
       });
       setIsEditing(false);
     } catch (err) {
       console.log(err);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: err.response.data.message,
+      });
     }
   }
 
   async function deleteTask() {
     try {
       await api.delete(`/task/${task._id}`);
+      toast({
+        variant: "success",
+        title: "Note Deleted",
+        description: "The note has been deleted successfully.",
+      });
       nav("/myTasks");
     } catch (err) {
-      console.log(err);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: err.response.data.error,
+      });
     }
   }
 
-  function addTodo() {
+  async function addTodo() {
     const emptyTodo = {
+      _id: generateObjectId(),
       title: "Enter Title",
       description: "Enter Description",
     };
     setTodos([...todos, emptyTodo]);
   }
 
+  // i added a function to generate a mongoose like id for the new todos. i know i should do that in the back, but i need the id to add the delete todo option. so i do it in the front.
+  function generateObjectId() {
+    const timestamp = Math.floor(Date.now() / 1000).toString(16); // 4-byte timestamp
+
+    const randomValue = Array.from({ length: 5 }, () =>
+      Math.floor(Math.random() * 256)
+    )
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join(""); // 5-byte random value
+
+    const counter = Array.from({ length: 3 }, () =>
+      Math.floor(Math.random() * 256)
+    )
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join(""); // 3-byte counter
+
+    return timestamp + randomValue + counter;
+  }
   function deleteTodo(id) {
     const todosCopy = todos.filter((todo) => {
-      return todo._id != id;
+      return todo._id !== id;
     });
     setTodos(todosCopy);
   }
+
   if (task != null) {
     const details = (
       <Card
@@ -132,22 +170,33 @@ function NoteDetails() {
           <div className="flex justify-between items-center">
             <div>
               {isEditing ? (
-                <Input value={title} onChange={handleTitleChange} />
+                <Input
+                  placeholder={title}
+                  onChange={handleTitleChange}
+                  className="border border-gray-300 rounded-md p-2"
+                />
               ) : (
                 <CardTitle>{title}</CardTitle>
               )}
               {isEditing ? (
-                <Input value={description} onChange={handleDescriptionChange} />
+                <Input
+                  placeholder={description}
+                  onChange={handleDescriptionChange}
+                  className="border border-gray-300 rounded-md p-2"
+                />
               ) : (
                 <CardDescription>{description}</CardDescription>
               )}
             </div>
-            <div className="flex items-center space-x-2"></div>
           </div>
         </CardHeader>
         <CardContent>
           {isEditing ? (
-            <Input value={body} onChange={handleBodyChange} />
+            <Input
+              placeholder={body}
+              onChange={handleBodyChange}
+              className="border border-gray-300 rounded-md p-2"
+            />
           ) : (
             <p>{body}</p>
           )}
@@ -162,22 +211,23 @@ function NoteDetails() {
                   {isEditing ? (
                     <>
                       <Input
-                        value={todo.title}
+                        placeholder={todo.title}
                         onChange={(event) => handleTodoChange(index, event)}
+                        className="border border-gray-300 rounded-md p-2"
                       />
                       <Button
                         variant="outline"
-                        className=" border-none"
+                        className="border-none p-0"
                         onClick={() => {
                           deleteTodo(todo._id);
                         }}
                       >
-                        <Eraser />
+                        <Eraser className="h-5 w-5" />
                       </Button>
                     </>
                   ) : (
                     <label
-                      className={`text-sm ${todo.isComplete ? " line-through" : ""}`}
+                      className={`text-sm ${todo.isComplete ? "line-through" : ""}`}
                     >
                       {index + 1}. {todo.title}
                     </label>
@@ -188,41 +238,60 @@ function NoteDetails() {
             {isEditing ? (
               <Button
                 variant="outline"
-                className=" border-none"
+                className="border-none p-0"
                 onClick={addTodo}
               >
-                <Plus />
+                <CirclePlus className="h-5 w-5" />
               </Button>
             ) : null}
           </div>
         </CardContent>
         <CardFooter className="flex justify-between items-center space-x-4">
-          <AreUSureDialog BtnText={<Trash2 />} func={deleteTask} />
+          <AreUSureDialog
+            BtnText={<Trash2 className="h-5 w-5" />}
+            func={deleteTask}
+          />
           <div className="flex space-x-2">
             {isEditing ? (
               <>
                 <Button
                   variant="outline"
-                  className=" border-none p-0 m-2"
-                  onClick={saveChanges}
+                  className="border-none p-0"
+                  onClick={() => {
+                    saveChanges();
+                    toast({
+                      variant: "success",
+                      title: "Changes Saved",
+                      description: "Your changes have been saved successfully.",
+                    });
+                  }}
                 >
-                  <Save />
+                  <Save className="h-5 w-5" />
                 </Button>
                 <Button
                   variant="outline"
-                  className=" border-none p-0 m-2"
+                  className="self-center text-center border-none"
+                  onClick={() => {
+                    nav("/myTasks");
+                  }}
+                >
+                  Discard <br /> Changes
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-none p-0"
                   onClick={toggleEditMode}
                 >
-                  <CircleX />
+                  <CircleX className="h-5 w-5" />
                 </Button>
               </>
             ) : (
               <Button
                 variant="outline"
-                className=" border-none p-0 m-2"
+                className=" border-none p-0 m-2 "
                 onClick={toggleEditMode}
               >
-                <Pencil />
+                <Pencil className="h-5 w-5 " />
               </Button>
             )}
           </div>
@@ -232,6 +301,8 @@ function NoteDetails() {
 
     return <Modal children={details} onclose={saveChanges} />;
   }
+
+  return null; // Render nothing while loading
 }
 
 export default NoteDetails;
