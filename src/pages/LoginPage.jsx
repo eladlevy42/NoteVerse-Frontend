@@ -10,9 +10,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Login() {
-  const { login } = useAuth();
+  const { login, handleGoogleSuccess } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   function handleLogin(ev) {
@@ -60,7 +61,23 @@ function Login() {
               >
                 Log In
               </Button>
-            </form>
+            </form>{" "}
+            <div className=" flex flex-col w-full items-center">
+              <p className=" text-center my-2">OR</p>
+              <GoogleLogin
+                className="w-full self-center"
+                onSuccess={async (credentialResponse) => {
+                  handleGoogleSuccess(credentialResponse);
+                }}
+                onError={() => {
+                  toast({
+                    variant: "destructive",
+                    title: "Uh oh! Something went wrong.",
+                    description: error.response.data.message,
+                  });
+                }}
+              />
+            </div>
           </CardContent>
           <CardFooter>
             <p className="text-center">

@@ -1,5 +1,6 @@
 import { useToast } from "@/components/ui/use-toast";
 import api from "@/lib/api";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
@@ -65,7 +66,6 @@ export const AuthProvider = ({ children }) => {
       const response = await api.post("/auth/login", userData);
       setToken(response.data.token);
     } catch (error) {
-      console.log(error);
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
@@ -92,10 +92,41 @@ export const AuthProvider = ({ children }) => {
       });
     }
   }
+  const loginGoogle = useGoogleLogin({});
 
+  async function handleGoogleSuccess(credentialResponse) {
+    const { credential } = credentialResponse;
+
+    try {
+      const response = await api.post("/google", {
+        credential,
+      });
+      setToken(response.data.token);
+      toast({
+        variant: "success",
+        title: "Connected",
+        description: "Connected via Google!",
+      });
+      // Redirect to a protected route or perform other actions as needed
+    } catch (error) {
+      console.error("Login failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.response,
+      });
+    }
+  }
   return (
     <AuthContext.Provider
-      value={{ loggedInUser, login, register, logout, token }}
+      value={{
+        loggedInUser,
+        handleGoogleSuccess,
+        login,
+        register,
+        logout,
+        token,
+      }}
     >
       {children}
     </AuthContext.Provider>

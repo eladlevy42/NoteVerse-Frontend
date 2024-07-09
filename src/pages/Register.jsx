@@ -13,9 +13,10 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress"; // Import the progress component
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 
 function Register() {
-  const { register } = useAuth();
+  const { register, handleGoogleSuccess } = useAuth();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
@@ -149,7 +150,23 @@ function Register() {
             >
               Register
             </Button>
-          </form>
+          </form>{" "}
+          <div className=" flex flex-col w-full items-center">
+            <p className=" text-center my-2">OR</p>
+            <GoogleLogin
+              className="w-full self-center"
+              onSuccess={async (credentialResponse) => {
+                handleGoogleSuccess(credentialResponse);
+              }}
+              onError={() => {
+                toast({
+                  variant: "destructive",
+                  title: "Uh oh! Something went wrong.",
+                  description: error.response.data.message,
+                });
+              }}
+            />
+          </div>
         </CardContent>
         <CardFooter>
           <p className="text-center">

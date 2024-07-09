@@ -9,7 +9,7 @@ import MainLayout from "./pages/MainLayout";
 import CreateTask from "./pages/CreateTask";
 import NoteDetails from "./pages/NoteDetails";
 import Contact from "./pages/Contact";
-
+import { GoogleOAuthProvider } from "@react-oauth/google";
 // ProtectedRoute to guard authenticated routes
 function ProtectedRoute({ children }) {
   const { loggedInUser } = useAuth();
