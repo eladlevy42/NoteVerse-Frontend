@@ -41,7 +41,7 @@ function NoteDetails() {
     try {
       const { data } = await api.get(`/task/${id}`);
       setTask(data);
-      setTodos(data.todoList);
+      setTodos(data.todoList.sort((a, b) => a.isComplete - b.isComplete));
       setBody(data.body);
       setDescription(data.description);
       setPinned(data.isPinned);

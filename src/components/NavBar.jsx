@@ -102,6 +102,18 @@ function NavBar() {
 
           <div className="flex items-center sm:hidden">
             <button
+              onClick={handleToggleTheme}
+              className="bg-transparent border-none focus:outline-none transition duration-300 ease-in-out transform hover:scale-110"
+            >
+              <div className={`icon ${rotated ? "animate-rotateInOut" : ""}`}>
+                {theme === "light" ? (
+                  <Moon className="text-[hsl(var(--foreground))] w-6 h-6" />
+                ) : (
+                  <Sun className="text-[hsl(var(--foreground))] w-6 h-6" />
+                )}
+              </div>
+            </button>
+            <button
               type="button"
               className="inline-flex items-center justify-center p-2 rounded-md text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] focus:outline-none focus:bg-[hsl(var(--muted))] focus:text-[hsl(var(--foreground))]"
               aria-controls="mobile-menu"
@@ -152,18 +164,6 @@ function NavBar() {
           >
             Contact
           </Link>
-          <button
-            onClick={handleToggleTheme}
-            className="bg-transparent border-none focus:outline-none transition duration-300 ease-in-out transform hover:scale-110"
-          >
-            <div className={`icon ${rotated ? "animate-rotateInOut" : ""}`}>
-              {theme === "light" ? (
-                <Moon className="text-[hsl(var(--foreground))] w-6 h-6" />
-              ) : (
-                <Sun className="text-[hsl(var(--foreground))] w-6 h-6" />
-              )}
-            </div>
-          </button>
         </div>
       </div>
     </nav>

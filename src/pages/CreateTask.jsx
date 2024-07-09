@@ -50,11 +50,6 @@ function CreateTask() {
       return todo.id !== id;
     });
     setTodos(todosCopy);
-    toast({
-      variant: "info",
-      title: "Todo Deleted",
-      description: "The todo item has been deleted.",
-    });
   }
 
   async function addTask(ev) {
