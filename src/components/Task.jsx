@@ -63,9 +63,9 @@ function Task({ task, getTasks }) {
               className="cursor-pointer text-sm w-auto"
             >
               {pinned ? (
-                <PinOff onClick={handlePinChange} />
+                <PinOff className="mb-4" onClick={handlePinChange} />
               ) : (
-                <Pin onClick={handlePinChange} />
+                <Pin className="mb-4" onClick={handlePinChange} />
               )}
             </label>
 

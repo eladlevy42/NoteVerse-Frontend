@@ -13,6 +13,7 @@ import { Button } from "../components/ui/button";
 import AreUSureDialog from "../components/ui/AreUSureDialog";
 import { Input } from "../components/ui/input";
 import {
+  CircleArrowLeft,
   CirclePlus,
   CircleX,
   Eraser,
@@ -169,6 +170,10 @@ function NoteDetails() {
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
+              <CircleArrowLeft
+                className="mb-2"
+                onClick={() => nav("/myTasks")}
+              />
               {isEditing ? (
                 <Input
                   placeholder={title}
