@@ -32,6 +32,22 @@ function Login() {
             <CardTitle>Log In</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className=" flex flex-col w-full items-center">
+              <GoogleLogin
+                className="w-full self-center"
+                onSuccess={async (credentialResponse) => {
+                  handleGoogleSuccess(credentialResponse);
+                }}
+                onError={() => {
+                  toast({
+                    variant: "destructive",
+                    title: "Uh oh! Something went wrong.",
+                    description: error.response.data.message,
+                  });
+                }}
+              />
+              <p className=" text-center my-2">OR</p>
+            </div>
             <form onSubmit={handleLogin} className="flex flex-col gap-4">
               <Input
                 placeholder="username"
@@ -62,22 +78,6 @@ function Login() {
                 Log In
               </Button>
             </form>{" "}
-            <div className=" flex flex-col w-full items-center">
-              <p className=" text-center my-2">OR</p>
-              <GoogleLogin
-                className="w-full self-center"
-                onSuccess={async (credentialResponse) => {
-                  handleGoogleSuccess(credentialResponse);
-                }}
-                onError={() => {
-                  toast({
-                    variant: "destructive",
-                    title: "Uh oh! Something went wrong.",
-                    description: error.response.data.message,
-                  });
-                }}
-              />
-            </div>
           </CardContent>
           <CardFooter>
             <p className="text-center">
