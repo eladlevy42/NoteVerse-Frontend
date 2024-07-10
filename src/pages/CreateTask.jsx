@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 function CreateTask() {
   const { toast } = useToast();
   const [todos, setTodos] = useState([
-    { title: "Enter Todo", description: "Todo Description", id: Math.random() },
+    { title: "Enter Todo", id: Math.random() },
   ]);
   const nav = useNavigate();
 
@@ -20,17 +20,6 @@ function CreateTask() {
     newTodos.find((todo) => {
       if (todo.id === id) {
         todo.title = event.target.value;
-      }
-    });
-    setTodos(newTodos);
-  }
-
-  function handleDescChange(id, event) {
-    event.preventDefault();
-    const newTodos = [...todos];
-    newTodos.find((todo) => {
-      if (todo.id === id) {
-        todo.description = event.target.value;
       }
     });
     setTodos(newTodos);
@@ -95,11 +84,7 @@ function CreateTask() {
                 onChange={(ev) => handleTitleChange(todo.id, ev)}
                 required
               />
-              <Input
-                placeholder={todo.description}
-                onChange={(ev) => handleDescChange(todo.id, ev)}
-                required
-              />
+
               <Eraser
                 onClick={() => deleteTodo(todo.id)}
                 className="w-14 cursor-pointer text-[hsl(var(--foreground))]"

@@ -131,7 +131,6 @@ function NoteDetails() {
     const emptyTodo = {
       _id: generateObjectId(),
       title: "Enter Title",
-      description: "Enter Description",
     };
     setTodos([...todos, emptyTodo]);
   }
@@ -181,15 +180,6 @@ function NoteDetails() {
                 />
               ) : (
                 <CardTitle>{title}</CardTitle>
-              )}
-              {isEditing ? (
-                <Input
-                  placeholder={description}
-                  onChange={handleDescriptionChange}
-                  className="border border-gray-300 rounded-md p-2"
-                />
-              ) : (
-                <CardDescription>{description}</CardDescription>
               )}
             </div>
           </div>
