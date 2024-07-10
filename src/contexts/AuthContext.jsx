@@ -92,7 +92,6 @@ export const AuthProvider = ({ children }) => {
       });
     }
   }
-  const loginGoogle = useGoogleLogin({});
 
   async function handleGoogleSuccess(credentialResponse) {
     const { credential } = credentialResponse;
